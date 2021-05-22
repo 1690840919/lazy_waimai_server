@@ -20,7 +20,7 @@ router.post('/registerUserName',genValidator(userValidate), async (ctx, next) =>
 // 登陆账号路由
 router.post('/loginUserName',genValidator(userValidate), async (ctx,next) => {
   const data = ctx.request.body
-  ctx.body = await controllerLoginUsername(data)
+  ctx.body = await controllerLoginUsername({ctx,...data})
 })
 
 module.exports = router

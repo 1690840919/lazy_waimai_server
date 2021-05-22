@@ -1,4 +1,4 @@
-const env = process.env.NODE_ENV // 环境参数
+const {isDev} = require('./env')
 let MYSQL_CONF // mysql配置
 
 // mysql
@@ -16,7 +16,7 @@ REDIS_CONF = {
 }
 
 // 生产环境
-if(env === 'production'){
+if(isDev){
   MYSQL_CONF = {
     host: 'localhost',
     user: 'root',

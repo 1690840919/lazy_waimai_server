@@ -49,13 +49,19 @@ const serviceGetUserInfo = (username, password) => {
 const serviceLoginUserName = async (data) => {
   const username = escape(data.username)
   const password = setCrypto(escape(data.password))
+  const session = data.ctx.session
   try{
     const userInfo = await serviceGetUserInfo(username,password)
     console.log(userInfo);
+    // 登陆失败
     if(!userInfo){
       return {
         code:'1003',
       }
+    }
+    // 登陆成功
+    if(session.userInfo == null){
+      session.userInfo = userInfo
     }
     return {
       code:'1000',

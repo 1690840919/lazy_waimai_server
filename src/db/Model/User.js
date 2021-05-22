@@ -22,11 +22,12 @@ const User = seq.define('users', {
   },
   avatar: {
     type: STRING,
+    defaultValue:'https://img0.baidu.com/it/u=3849281771,1234052768&fm=26&fmt=auto&gp=0.jpg',
     comment: '头像，图片地址'
   },
   nickName: {
     type: STRING,
-    defaultValue:'新用户',
+    defaultValue:'新用户-蜡笔小鸡',
     comment: '昵称'
   },
   gender: {
