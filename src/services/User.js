@@ -77,5 +77,5 @@ const serviceLoginUserName = async (data) => {
 
 module.exports = {
   serviceRegisterUserName,
-  serviceLoginUserName
+  serviceLoginUserName,
 }
