@@ -6,6 +6,7 @@
 const {
   serviceRegisterUserName,
   serviceLoginUserName,
+  serviceEditUserInfo,
 } = require('../services/User')
 const { SuccessModel, ErrorModel } = require("../Model/ResModel")
 const allCode = require('../config/ResCode')
@@ -42,8 +43,18 @@ const controllerExitUsername = async (ctx) => {
   }
 }
 
+// 资料修改业务逻辑
+const controllerEditUserInfo = async (oldData,newData) => {
+  const { code } = await serviceEditUserInfo(oldData,newData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '修改成功'  })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
 module.exports = {
   controllerRegisterUsername,
   controllerLoginUsername,
   controllerExitUsername,
+  controllerEditUserInfo
 }

@@ -43,7 +43,7 @@ const User = seq.define('users', {
   },
   registerTime:{
     type:STRING,
-    defaultValue:(new Date()).getTime(),
+    defaultValue:(new Date()).getTime()+"",
     comment:'注册时间'
   }
 })

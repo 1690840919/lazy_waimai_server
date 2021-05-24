@@ -39,7 +39,7 @@ const serviceGetUserInfo = (username, password) => {
   }
 
   const userInfo = User.findOne({
-    attributes: ['id', 'username', 'nickName', 'avatar'],
+    attributes: ['id', 'username', 'nickName', 'avatar', 'gender','registerTime','phone'],
     where: whereOpt
   })
   return userInfo
@@ -75,7 +75,29 @@ const serviceLoginUserName = async (data) => {
   
 }
 
+// 资料修改
+const serviceEditUserInfo = async ({username},newData) => {
+  // 更新条件
+  const where = { username }
+  try{
+    const result = await User.update(newData, {
+      where
+    });
+    if(result){
+      return {
+        code:'1000',
+      }
+    }
+  }catch(err){
+    return {
+      code:'1006',
+    }
+  }
+  
+}
+
 module.exports = {
   serviceRegisterUserName,
   serviceLoginUserName,
+  serviceEditUserInfo,
 }
