@@ -8,6 +8,7 @@ const {
   controllerLoginUsername,
   controllerExitUsername,
   controllerEditUserInfo,
+  controllerLoginCheck,
 } = require('../../controller/User')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck } = require('../../middlewares/loginCheck')
@@ -35,6 +36,11 @@ router.post('/exitUserName', loginCheck, async (ctx, next) => {
 router.post('/editUserInfo', loginCheck, genValidator(userValidate), async (ctx, next) => {
   const data = ctx.request.body
   ctx.body = await controllerEditUserInfo(ctx.session.userInfo, data)
+})
+
+// 检验登陆是否过期
+router.post('/loginCheck', loginCheck, async (ctx, next) => {
+  ctx.body = await controllerLoginCheck(ctx)
 })
 
 module.exports = router

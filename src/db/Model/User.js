@@ -45,6 +45,11 @@ const User = seq.define('users', {
     type:STRING,
     defaultValue:(new Date()).getTime()+"",
     comment:'注册时间'
+  },
+  showMoney:{
+    type:BOOLEAN,
+    defaultValue: true,
+    comment:'是否显示余额',
   }
 })
 

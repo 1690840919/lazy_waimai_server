@@ -52,9 +52,15 @@ const controllerEditUserInfo = async (oldData,newData) => {
   return new ErrorModel({ code, message: allCode[code] })
 }
 
+// 检测登陆业务逻辑
+const controllerLoginCheck = async (ctx) => {
+  return new SuccessModel({ message: '用户已登录'  })
+}
+
 module.exports = {
   controllerRegisterUsername,
   controllerLoginUsername,
   controllerExitUsername,
-  controllerEditUserInfo
+  controllerEditUserInfo,
+  controllerLoginCheck,
 }
