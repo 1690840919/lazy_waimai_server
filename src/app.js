@@ -48,7 +48,7 @@ app.use(session({
   cookie: {
     path: '/',
     httpOnly: true,
-    maxAge: 10 * 60 * 1000  // ms 1小时 5分钟
+    maxAge: 30 * 60 * 1000  // ms 1小时 30分钟
   },
   // ttl: 60 * 60 * 1000 // ms 1小时 redis 过期时间，不写会自动设置和cookie一样
   store: redisStore({

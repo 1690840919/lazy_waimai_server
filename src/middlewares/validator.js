@@ -3,6 +3,7 @@
  * @author xiankun
  */
 const {ErrorModel} = require('../Model/ResModel')
+const allCode = require("../config/ResCode")
 
 const genValidator = (validatorFn) => {
   async function validator(ctx,next) {
@@ -10,6 +11,10 @@ const genValidator = (validatorFn) => {
     const err = validatorFn(ctx.request.body)
     if(err){
       const message = (err.instancePath+" "+err.message).replace('/','')
+      if(err.instancePath === '/phone'){
+        ctx.body = new ErrorModel({code:'1201',message:allCode['1201']})
+        return
+      }
       ctx.body = new ErrorModel({code:'1100',message})
       // ctx.body = err
     }else{

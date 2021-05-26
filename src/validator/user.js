@@ -27,6 +27,12 @@ const registerSchema = {
       type: 'number',
       minimum: 1,
       maximum: 3
+    },
+    phone:{
+      type: 'string',
+      maxLength: 11,
+      minLength: 11,
+      pattern: "^1[3|4|5|7|8][0-9]{9}$",
     }
   }
 }

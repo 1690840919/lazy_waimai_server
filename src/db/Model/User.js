@@ -17,7 +17,7 @@ const User = seq.define('users', {
     comment: '密码'
   },
   phone:{
-    type:INTEGER,
+    type:STRING,
     comment:'手机号'
   },
   avatar: {
