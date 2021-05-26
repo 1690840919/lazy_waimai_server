@@ -4,22 +4,33 @@ const cors = require("koa2-cors")
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
+const bodyparser = require('koa-body')
 const logger = require('koa-logger')
 const session = require('koa-generic-session')
 const redisStore = require('koa-redis')
 const { REDIS_CONF } = require('./config/db')
 const { SESSION_SECRET_KEY } = require('./config/secretKeys')
+const path = require('path')
+const koaStatic = require('koa-static')
 
 const index = require('./routes/index')
 const User = require('./routes/User/User')
+const Utils = require('./routes/Utils/Upload')
+
+// 静态文件
+app.use(koaStatic(path.join(__dirname, '/public/uploadImg')))
 
 // error handler
 onerror(app)
 
 // middlewares
 app.use(bodyparser({
-  enableTypes: ['json', 'form', 'text']
+  multipart: true,// 支持文件格式
+  formidable: {
+    uploadDir: path.join(__dirname, '/public/uploadImg'),
+    keepExtensions: true, // 保留拓展名
+  },
+  // enableTypes: ['json', 'form', 'text']
 }))
 app.use(json())
 app.use(logger())
@@ -70,6 +81,7 @@ app.use(async (ctx, next) => {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(User.routes(), User.allowedMethods())
+app.use(Utils.routes(), Utils.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {
