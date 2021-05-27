@@ -13,7 +13,8 @@ const controllerUploadImg = async ({ path }, origin) => {
     const arr = path.split("\\")
     const basename = arr[arr.length - 1]
     const data = {
-      url: `${origin}/${basename}`
+      url: `http://10.235.83.94:7000/${basename}`,
+      // url: `${origin}/${basename}`
     }
     return new SuccessModel({ message: '上传成功', data })
   } catch (err) {
