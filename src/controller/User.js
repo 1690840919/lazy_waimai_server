@@ -8,6 +8,7 @@ const {
   serviceLoginUserName,
   serviceEditUserInfo,
   serviceUserBill,
+  serviceUserDiscount,
 } = require('../services/User')
 const { SuccessModel, ErrorModel } = require("../Model/ResModel")
 const allCode = require('../config/ResCode')
@@ -67,6 +68,15 @@ const controllerUserBill = async (userInfo,reqData) => {
   return new ErrorModel({ code, message: allCode[code] })
 }
 
+// 获取红包卡券业务逻辑
+const controllerUserDiscount = async (userInfo,reqData) => {
+  const { code, data } = await serviceUserDiscount(userInfo,reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '获取成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
 module.exports = {
   controllerRegisterUsername,
   controllerLoginUsername,
@@ -74,4 +84,5 @@ module.exports = {
   controllerEditUserInfo,
   controllerLoginCheck,
   controllerUserBill,
+  controllerUserDiscount,
 }

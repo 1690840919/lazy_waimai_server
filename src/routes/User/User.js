@@ -10,6 +10,7 @@ const {
   controllerEditUserInfo,
   controllerLoginCheck,
   controllerUserBill,
+  controllerUserDiscount,
 } = require('../../controller/User')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck } = require('../../middlewares/loginCheck')
@@ -49,5 +50,12 @@ router.post('/userBill', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
   ctx.body = await controllerUserBill(ctx.session.userInfo, data)
 })
+
+// 获取账单路由
+router.post('/userDiscount', loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserDiscount(ctx.session.userInfo, data)
+})
+
 
 module.exports = router
