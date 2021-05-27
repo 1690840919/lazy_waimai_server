@@ -9,6 +9,7 @@ const {
   controllerExitUsername,
   controllerEditUserInfo,
   controllerLoginCheck,
+  controllerUserBill,
 } = require('../../controller/User')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck } = require('../../middlewares/loginCheck')
@@ -41,6 +42,12 @@ router.post('/editUserInfo', loginCheck, genValidator(userValidate), async (ctx,
 // 检验登陆是否过期
 router.post('/loginCheck', loginCheck, async (ctx, next) => {
   ctx.body = await controllerLoginCheck(ctx)
+})
+
+// 获取账单路由
+router.post('/userBill', loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserBill(ctx.session.userInfo, data)
 })
 
 module.exports = router

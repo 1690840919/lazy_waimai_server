@@ -7,6 +7,7 @@ const {
   serviceRegisterUserName,
   serviceLoginUserName,
   serviceEditUserInfo,
+  serviceUserBill,
 } = require('../services/User')
 const { SuccessModel, ErrorModel } = require("../Model/ResModel")
 const allCode = require('../config/ResCode')
@@ -35,26 +36,35 @@ const controllerLoginUsername = async loginData => {
 
 // 退出登陆业务逻辑
 const controllerExitUsername = async (ctx) => {
-  try{
+  try {
     delete ctx.session.userInfo
     return new SuccessModel({ message: '退出成功' })
-  }catch(err){
-    return new ErrorModel({ code:'1101', message: allCode['1101'] })
+  } catch (err) {
+    return new ErrorModel({ code: '1101', message: allCode['1101'] })
   }
 }
 
 // 资料修改业务逻辑
-const controllerEditUserInfo = async (oldData,newData) => {
-  const { code } = await serviceEditUserInfo(oldData,newData)
+const controllerEditUserInfo = async (oldData, newData) => {
+  const { code } = await serviceEditUserInfo(oldData, newData)
   if (code === '1000') {
-    return new SuccessModel({ message: '修改成功'  })
+    return new SuccessModel({ message: '修改成功' })
   }
   return new ErrorModel({ code, message: allCode[code] })
 }
 
 // 检测登陆业务逻辑
 const controllerLoginCheck = async (ctx) => {
-  return new SuccessModel({ message: '用户已登录'  })
+  return new SuccessModel({ message: '用户已登录' })
+}
+
+// 获取账单业务逻辑
+const controllerUserBill = async (userInfo,reqData) => {
+  const { code, data } = await serviceUserBill(userInfo,reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '获取成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
 }
 
 module.exports = {
@@ -63,4 +73,5 @@ module.exports = {
   controllerExitUsername,
   controllerEditUserInfo,
   controllerLoginCheck,
+  controllerUserBill,
 }
