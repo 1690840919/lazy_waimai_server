@@ -2,6 +2,7 @@
  * @description 数据库数据处理
  * @author xiankun
  */
+const { getTime } = require('../utils/time')
 const setCrypto = require("../utils/crypto")
 const { User } = require('../db/Model/User') // 获取user模型
 const { Bill } = require('../db/Model/Bill') // 获取Bill模型
@@ -41,7 +42,8 @@ const serviceGetUserInfo = (username, password) => {
   }
 
   const userInfo = User.findOne({
-    attributes: ['id', 'username', 'nickName', 'avatar', 'money', 'showMoney',
+    attributes: ['id', 'username', 'nickName', 'avatar', 'money',
+      'showMoney', 'isVip', 'vipTime',
       'gender', 'registerTime', 'phone'],
     where: whereOpt
   })
@@ -69,7 +71,7 @@ const serviceLoginUserName = async (data) => {
     // 登陆领取红包
     createUserDiscount({
       userId: userInfo.id,
-      img:"",
+      img: "",
       time: (new Date()).getTime() + 7 * 24 * 60 * 60 * 1000,
       money: 5,
       title: '会员红包',
@@ -91,23 +93,23 @@ const serviceLoginUserName = async (data) => {
 }
 
 // 资料修改
-const serviceEditUserInfo = async ({ username, money, id }, newData) => {
-  // 更新条件
-  const where = { username }
+const serviceEditUserInfo = async ({ username }, newData) => {
   try {
+    const { money, id } = await serviceGetUserInfo(username) // 查询原有金额
     const result = await User.update(newData, {
-      where
+      where: { username }
     });
     if (result) {
-      if (newData.money) {
-        const add = newData.money * 1 > money * 1
-        createUserBill({
-          userId: id,
-          isSpend: !add,
-          title: '充值金额',
-          num: add ? newData.addMoney : newData.redMoney,
-          money: newData.money,
-        })
+      if (newData.money) { // 涉及到金额，产生账单
+        const add = newData.money * 1 > money * 1 //判断变动情况 是增加还是减少
+        const billData = {
+          userId: id, // 用户id
+          isSpend: !add, // 是不是消费
+          title: add ? '充值金额' : newData.title, // 账单标题
+          num: add ? newData.addMoney : newData.redMoney, // 变动的金额
+          money: newData.money, // 余额
+        }
+        await createUserBill(billData)// 接收1、变动金额。2、消费标题。
       }
       return {
         code: '1000',
@@ -161,6 +163,7 @@ const createUserBill = async ({ money, title, userId, isSpend, num }) => {
       num,
       time: (new Date()).getTime()
     }
+    console.log('datacreate', data);
     const newBill = await Bill.create(data)
   } catch (err) {
     console.log(err);
@@ -219,10 +222,53 @@ const createUserDiscount = async ({
 
 }
 
+// 充值VIP
+const serviceUserVip = async ({ username }, { money, month }) => {
+  try {
+    const oldUserInfo = await serviceGetUserInfo(username)
+    if (oldUserInfo.money < money) {
+      return {
+        code: '1008'
+      }
+    }
+    const newMoney = oldUserInfo.money - money
+    let dateArr = getTime(oldUserInfo.vipTime, 'YY-MM-DD').split('-')
+    if ((dateArr[1] * 1 + month) <= 12) {
+      dateArr[1] = dateArr[1] * 1 + month
+    } else {
+      const num = dateArr[1] * 1 + month - 12
+      dateArr[0] = dateArr[0] * 1 + 1
+      dateArr[1] = num < 10 ? "0" + num : num
+    }
+    const newVipTime = (new Date(dateArr.join('-'))).getTime() + ""
+    // 更新信息
+    const { code } = await serviceEditUserInfo({ username }, {
+      vipTime: newVipTime,
+      redMoney: money,
+      title: '充值VIP',
+      money: newMoney,
+      isVip: true,
+    })
+    if (code !== '1000') {
+      return { code: "1103" }
+    }
+    return {
+      code: '1000',
+      data: {
+        newVipTime,
+        newMoney,
+      }
+    }
+  } catch {
+    return { code: "1103" }
+  }
+}
+
 module.exports = {
   serviceRegisterUserName,
   serviceLoginUserName,
   serviceEditUserInfo,
   serviceUserBill,
   serviceUserDiscount,
+  serviceUserVip,
 }

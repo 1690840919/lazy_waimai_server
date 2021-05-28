@@ -50,6 +50,16 @@ const User = seq.define('users', {
     type:BOOLEAN,
     defaultValue: true,
     comment:'是否显示余额',
+  },
+  isVip:{
+    type:BOOLEAN,
+    defaultValue: false,
+    comment:'是否VIP',
+  },
+  vipTime:{
+    type:STRING,
+    defaultValue:(new Date()).getTime()+"",
+    comment:'过期时间',
   }
 })
 
