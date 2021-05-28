@@ -10,6 +10,7 @@ const {
   serviceUserBill,
   serviceUserDiscount,
   serviceUserVip,
+  serviceUserVipPacket,
 } = require('../services/User')
 const { SuccessModel, ErrorModel } = require("../Model/ResModel")
 const allCode = require('../config/ResCode')
@@ -87,6 +88,16 @@ const controllerUserVip = async (userInfo,reqData) => {
   return new ErrorModel({ code, message: allCode[code] })
 }
 
+// 领取红包业务逻辑
+const controllerUserVipPacket = async (userInfo,reqData) => {
+  const { code, data } = await serviceUserVipPacket(userInfo,reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '领取成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
+// 领取hi眼
 module.exports = {
   controllerRegisterUsername,
   controllerLoginUsername,
@@ -96,4 +107,5 @@ module.exports = {
   controllerUserBill,
   controllerUserDiscount,
   controllerUserVip,
+  controllerUserVipPacket,
 }

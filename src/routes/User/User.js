@@ -11,7 +11,8 @@ const {
   controllerLoginCheck,
   controllerUserBill,
   controllerUserDiscount,
-  controllerUserVip
+  controllerUserVip,
+  controllerUserVipPacket,
 } = require('../../controller/User')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck } = require('../../middlewares/loginCheck')
@@ -64,5 +65,10 @@ router.post('/userVip', loginCheck, async (ctx, next) => {
   ctx.body = await controllerUserVip(ctx.session.userInfo,data)
 })
 
+// 领取会员红包路由
+router.post('/userVipPacket', loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserVipPacket(ctx.session.userInfo,data)
+})
 
 module.exports = router

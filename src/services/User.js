@@ -43,7 +43,7 @@ const serviceGetUserInfo = (username, password) => {
 
   const userInfo = User.findOne({
     attributes: ['id', 'username', 'nickName', 'avatar', 'money',
-      'showMoney', 'isVip', 'vipTime',
+      'showMoney', 'isVip', 'vipTime', 'vipPacketNum',
       'gender', 'registerTime', 'phone'],
     where: whereOpt
   })
@@ -68,18 +68,6 @@ const serviceLoginUserName = async (data) => {
     if (session.userInfo == null) {
       session.userInfo = userInfo
     }
-    // 登陆领取红包
-    createUserDiscount({
-      userId: userInfo.id,
-      img: "",
-      time: (new Date()).getTime() + 7 * 24 * 60 * 60 * 1000,
-      money: 5,
-      title: '会员红包',
-      method: '限制外卖订单使用',
-      condition: 0,
-      isPacket: (Math.random() * 10) > 5,
-    })
-
     return {
       code: '1000',
       data: userInfo
@@ -231,6 +219,11 @@ const serviceUserVip = async ({ username }, { money, month }) => {
         code: '1008'
       }
     }
+    if (!oldUserInfo.vipPacketNum) {
+
+    }
+    // 开会员4个红包
+    const newVipPacketNum = oldUserInfo.vipPacketNum || 4
     const newMoney = oldUserInfo.money - money
     let dateArr = getTime(oldUserInfo.vipTime, 'YY-MM-DD').split('-')
     if ((dateArr[1] * 1 + month) <= 12) {
@@ -248,6 +241,7 @@ const serviceUserVip = async ({ username }, { money, month }) => {
       title: '充值VIP',
       money: newMoney,
       isVip: true,
+      vipPacketNum: newVipPacketNum,
     })
     if (code !== '1000') {
       return { code: "1103" }
@@ -264,6 +258,50 @@ const serviceUserVip = async ({ username }, { money, month }) => {
   }
 }
 
+// 领取会员红包
+const serviceUserVipPacket = async ({ username }) => {
+  try {
+    const userInfo = await serviceGetUserInfo(username)
+    if (!userInfo.isVip) {
+      return {
+        code: '1008'
+      }
+    }
+    const vipPacketNum = userInfo.vipPacketNum - 1
+    if (vipPacketNum < 0) {
+      return {
+        code: '1009'
+      }
+    }
+    // 更新信息
+    const { code } = await serviceEditUserInfo({ username }, {
+      vipPacketNum
+    })
+    if (code !== '1000') {
+      return { code: "1104" }
+    }
+    // 新建红包
+    createUserDiscount({
+      userId: userInfo.id,
+      img: "",
+      time: (new Date()).getTime() + 7 * 24 * 60 * 60 * 1000,
+      money: 5,
+      title: '会员红包',
+      method: '限制外卖订单使用',
+      condition: 0,
+      isPacket: true,
+    })
+    return {
+      code: '1000'
+    }
+  } catch (err) {
+    console.log(err);
+    return {
+      code: '1104'
+    }
+  }
+}
+
 module.exports = {
   serviceRegisterUserName,
   serviceLoginUserName,
@@ -271,4 +309,5 @@ module.exports = {
   serviceUserBill,
   serviceUserDiscount,
   serviceUserVip,
+  serviceUserVipPacket,
 }
