@@ -11,6 +11,9 @@ const {
   serviceUserDiscount,
   serviceUserVip,
   serviceUserVipPacket,
+  serviceUserNewAddress,
+  serviceUserAddress,
+  serviceUserDeleteAddress,
 } = require('../services/User')
 const { SuccessModel, ErrorModel } = require("../Model/ResModel")
 const allCode = require('../config/ResCode')
@@ -97,7 +100,33 @@ const controllerUserVipPacket = async (userInfo,reqData) => {
   return new ErrorModel({ code, message: allCode[code] })
 }
 
-// 领取hi眼
+// 新增地址业务逻辑
+const controllerUserNewAddress = async (userInfo,reqData) => {
+  const { code, data } = await serviceUserNewAddress(userInfo,reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '保存成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
+// 获取地址业务逻辑
+const controllerUserAddress = async (userInfo,reqData) => {
+  const { code, data } = await serviceUserAddress(userInfo,reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '获取成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
+// 删除地址业务逻辑
+const controllerUserDeleteAddress = async (userInfo,reqData) => {
+  const { code, data } = await serviceUserDeleteAddress(userInfo,reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '删除成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
 module.exports = {
   controllerRegisterUsername,
   controllerLoginUsername,
@@ -108,4 +137,7 @@ module.exports = {
   controllerUserDiscount,
   controllerUserVip,
   controllerUserVipPacket,
+  controllerUserNewAddress,
+  controllerUserAddress,
+  controllerUserDeleteAddress,
 }

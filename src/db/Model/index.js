@@ -3,13 +3,14 @@
  * @author beitu
  */
 
- const { User } = require('./User')
- const { Bill } = require('./Bill')
- const { Discount } = require('./Discount')
+const { User } = require('./User')
+const { Bill } = require('./Bill')
+const { Discount } = require('./Discount')
+const { Address } = require('./Address')
 
- module.exports = {
-   User,
-   Bill,
-   Discount,
- }
- 
+module.exports = {
+  User,
+  Bill,
+  Discount,
+  Address,
+}

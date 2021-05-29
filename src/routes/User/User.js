@@ -13,6 +13,9 @@ const {
   controllerUserDiscount,
   controllerUserVip,
   controllerUserVipPacket,
+  controllerUserNewAddress,
+  controllerUserAddress,
+  controllerUserDeleteAddress,
 } = require('../../controller/User')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck } = require('../../middlewares/loginCheck')
@@ -70,5 +73,24 @@ router.post('/userVipPacket', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
   ctx.body = await controllerUserVipPacket(ctx.session.userInfo,data)
 })
+
+// 新增地址路由
+router.post('/userNewAddress', loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserNewAddress(ctx.session.userInfo,data)
+})
+
+// 获取地址路由
+router.post('/userAddress', loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserAddress(ctx.session.userInfo,data)
+})
+
+// 获取地址路由
+router.post('/userDeleteAddress', loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserDeleteAddress(ctx.session.userInfo,data)
+})
+
 
 module.exports = router

@@ -7,6 +7,7 @@ const setCrypto = require("../utils/crypto")
 const { User } = require('../db/Model/User') // 获取user模型
 const { Bill } = require('../db/Model/Bill') // 获取Bill模型
 const { Discount } = require('../db/Model/Discount') // 获取Discount模型
+const { Address } = require('../db/Model/Address')
 const escape = require("../utils/escape") // 转义
 
 // 注册用户
@@ -57,7 +58,6 @@ const serviceLoginUserName = async (data) => {
   const session = data.ctx.session
   try {
     const userInfo = await serviceGetUserInfo(username, password)
-    console.log(userInfo);
     // 登陆失败
     if (!userInfo) {
       return {
@@ -151,10 +151,8 @@ const createUserBill = async ({ money, title, userId, isSpend, num }) => {
       num,
       time: (new Date()).getTime()
     }
-    console.log('datacreate', data);
     const newBill = await Bill.create(data)
   } catch (err) {
-    console.log(err);
   }
 
 }
@@ -302,6 +300,86 @@ const serviceUserVipPacket = async ({ username }) => {
   }
 }
 
+// 保存地址
+const serviceUserNewAddress = async ({ username, id }, reqData) => {
+  try {
+    reqData.userId = id
+    if (reqData.id) {
+      return await serviceUserEditAddress({ username }, reqData)
+    }
+    const newAddress = await Address.create(reqData)
+    if (newAddress) {
+      return { code: '1000' }
+    }
+  } catch (err) {
+    return {
+      code: '1105'
+    }
+  }
+}
+
+// 修改地址
+const serviceUserEditAddress = async ({ username }, reqData) => {
+  try {
+    const result = await Address.update(reqData, {
+      where: { id: reqData.id }
+    });
+    if (result) {
+      return {
+        code: '1000'
+      }
+    }
+    return {
+      code: '1006'
+    }
+  } catch (err) {
+    return {
+      code: '1006'
+    }
+  }
+
+}
+
+// 获取地址
+const serviceUserAddress = async ({ username, id }, reqData) => {
+  try {
+    const findData = {
+      where: { userId: id },
+      order: [
+        ['id', 'DESC']
+      ],
+    }
+    const { rows: address } = await Address.findAndCountAll(findData)
+    return {
+      code: '1000',
+      data: address
+    }
+  } catch (err) {
+    return {
+      code: '1102',
+    }
+  }
+}
+
+// 删除地址
+const serviceUserDeleteAddress = async ({ username }, { id }) => {
+  try {
+    const result = await Address.destroy({
+      where: {
+        id
+      }
+    })
+    console.log('result',result);
+    return{
+      code:'1000'
+    }
+  } catch (err) {
+    return {
+      code: "1106"
+    }
+  }
+}
+
 module.exports = {
   serviceRegisterUserName,
   serviceLoginUserName,
@@ -310,4 +388,7 @@ module.exports = {
   serviceUserDiscount,
   serviceUserVip,
   serviceUserVipPacket,
+  serviceUserNewAddress,
+  serviceUserAddress,
+  serviceUserDeleteAddress,
 }
