@@ -305,7 +305,7 @@ const serviceUserNewAddress = async ({ username, id }, reqData) => {
   try {
     reqData.userId = id
     if (reqData.id) {
-      return await serviceUserEditAddress({ username }, reqData)
+      return await serviceUserEditAddress({ username,id }, reqData)
     }
     const newAddress = await Address.create(reqData)
     if (newAddress) {
@@ -319,8 +319,21 @@ const serviceUserNewAddress = async ({ username, id }, reqData) => {
 }
 
 // 修改地址
-const serviceUserEditAddress = async ({ username }, reqData) => {
+const serviceUserEditAddress = async ({ username,id }, reqData) => {
   try {
+    if(reqData.isDefault){
+      const defaultResult = await Address.update({isDefault:false}, {
+        where: { 
+          userId: id,
+          isDefault:true
+        }
+      });
+      if(!defaultResult){
+        return {
+          code: '1006'
+        }
+      }
+    }
     const result = await Address.update(reqData, {
       where: { id: reqData.id }
     });
