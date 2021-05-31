@@ -16,6 +16,7 @@ const koaStatic = require('koa-static')
 const index = require('./routes/index')
 const User = require('./routes/User/User')
 const Utils = require('./routes/Utils/Upload')
+const Shop = require('./routes/Shop/Shop')
 
 // 静态文件
 app.use(koaStatic(path.join(__dirname, '/public/uploadImg')))
@@ -82,6 +83,7 @@ app.use(async (ctx, next) => {
 app.use(index.routes(), index.allowedMethods())
 app.use(User.routes(), User.allowedMethods())
 app.use(Utils.routes(), Utils.allowedMethods())
+app.use(Shop.routes(), Shop.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

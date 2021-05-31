@@ -5,7 +5,7 @@ let MYSQL_CONF // mysql配置
 MYSQL_CONF = {
   host: 'localhost',
   user: 'root',
-  password: 'root',
+  password: '123456',
   port: '3306',
   database: 'lazy_waimai'
 }
@@ -20,7 +20,7 @@ if(isDev){
   MYSQL_CONF = {
     host: 'localhost',
     user: 'root',
-    password: 'root',
+    password: '123456',
     port: '3306',
     database: 'lazy_waimai'
   }

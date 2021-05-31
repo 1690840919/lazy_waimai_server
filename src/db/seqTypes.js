@@ -11,5 +11,6 @@
    INTEGER: Sequelize.INTEGER, // 整型
    BOOLEAN: Sequelize.BOOLEAN, // 布尔类型
    FLOAT:Sequelize.FLOAT, // 浮点数
+   ARRAY:Sequelize.ARRAY, // 数组
  }
  
