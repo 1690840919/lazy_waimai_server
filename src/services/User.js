@@ -4,10 +4,7 @@
  */
 const { getTime } = require('../utils/time')
 const setCrypto = require("../utils/crypto")
-const { User } = require('../db/Model/User') // 获取user模型
-const { Bill } = require('../db/Model/Bill') // 获取Bill模型
-const { Discount } = require('../db/Model/Discount') // 获取Discount模型
-const { Address } = require('../db/Model/Address')
+const { User, Bill, Discount, Address } = require('../db/Model')
 const escape = require("../utils/escape") // 转义
 
 // 注册用户
@@ -305,7 +302,7 @@ const serviceUserNewAddress = async ({ username, id }, reqData) => {
   try {
     reqData.userId = id
     if (reqData.id) {
-      return await serviceUserEditAddress({ username,id }, reqData)
+      return await serviceUserEditAddress({ username, id }, reqData)
     }
     const newAddress = await Address.create(reqData)
     if (newAddress) {
@@ -319,16 +316,16 @@ const serviceUserNewAddress = async ({ username, id }, reqData) => {
 }
 
 // 修改地址
-const serviceUserEditAddress = async ({ username,id }, reqData) => {
+const serviceUserEditAddress = async ({ username, id }, reqData) => {
   try {
-    if(reqData.isDefault){
-      const defaultResult = await Address.update({isDefault:false}, {
-        where: { 
+    if (reqData.isDefault) {
+      const defaultResult = await Address.update({ isDefault: false }, {
+        where: {
           userId: id,
-          isDefault:true
+          isDefault: true
         }
       });
-      if(!defaultResult){
+      if (!defaultResult) {
         return {
           code: '1006'
         }
@@ -382,9 +379,9 @@ const serviceUserDeleteAddress = async ({ username }, { id }) => {
         id
       }
     })
-    console.log('result',result);
-    return{
-      code:'1000'
+    console.log('result', result);
+    return {
+      code: '1000'
     }
   } catch (err) {
     return {
