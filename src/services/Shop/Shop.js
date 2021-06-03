@@ -4,6 +4,7 @@
  */
 
 const { Shop, ShopMenu, ShopMenuFood } = require('../../db/Model')
+const { Op } = require("sequelize");
 
 // 获取商家
 const serviceShopList = async (reqData) => {
@@ -56,6 +57,9 @@ const serviceShopMenu = async (reqData) => {
 const serviceShopFood = async (reqData) => {
   try {
     const findData = {}
+    if (reqData.menu === '热销' || reqData.menu === '折扣') {
+      return await serviceShopSomeFood(reqData)
+    }
     if (reqData.menu) {
       findData.where = { shopId: reqData.id, foodMenu: reqData.menu }
     }
@@ -69,6 +73,38 @@ const serviceShopFood = async (reqData) => {
       code: '1102',
     }
   }
+}
+
+// 获取折扣商品或热销商品
+const serviceShopSomeFood = async (reqData) => {
+  try {
+    const findData = {}
+    if (reqData.menu === '热销') {
+      findData.where = {
+        shopId: reqData.id,
+        foodSale: {
+          [Op.gte]: 150, // 大于等于100
+        }
+      }
+    } else if (reqData.menu === '折扣') {
+      findData.where = {
+        shopId: reqData.id,
+        foodPrice: {
+          [Op.lte]: 9.9, // 小于20
+        }
+      }
+    }
+    const foods = await ShopMenuFood.findAll(findData)
+    return {
+      code: '1000',
+      data: foods
+    }
+  } catch (err) {
+    return {
+      code: '1102',
+    }
+  }
+
 }
 
 module.exports = {
