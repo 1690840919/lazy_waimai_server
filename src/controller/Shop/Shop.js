@@ -38,6 +38,7 @@ const controllerShopList = async (reqData) => {
   return new ErrorModel({ code, message: allCode[code] })
 }
 
+
 module.exports = {
   controllerShopList,
   controllerShopMenu,

@@ -16,6 +16,8 @@ const {
   controllerUserNewAddress,
   controllerUserAddress,
   controllerUserDeleteAddress,
+  controllerUserOrder,
+  controllerUserOrderCreate,
 } = require('../../controller/User')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck } = require('../../middlewares/loginCheck')
@@ -65,32 +67,45 @@ router.post('/userDiscount', loginCheck, async (ctx, next) => {
 // 充值VIP路由
 router.post('/userVip', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
-  ctx.body = await controllerUserVip(ctx.session.userInfo,data)
+  ctx.body = await controllerUserVip(ctx.session.userInfo, data)
 })
 
 // 领取会员红包路由
 router.post('/userVipPacket', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
-  ctx.body = await controllerUserVipPacket(ctx.session.userInfo,data)
+  ctx.body = await controllerUserVipPacket(ctx.session.userInfo, data)
 })
 
 // 新增地址路由
 router.post('/userNewAddress', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
-  ctx.body = await controllerUserNewAddress(ctx.session.userInfo,data)
+  ctx.body = await controllerUserNewAddress(ctx.session.userInfo, data)
 })
 
 // 获取地址路由
 router.post('/userAddress', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
-  ctx.body = await controllerUserAddress(ctx.session.userInfo,data)
+  ctx.body = await controllerUserAddress(ctx.session.userInfo, data)
 })
 
 // 获取地址路由
 router.post('/userDeleteAddress', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
-  ctx.body = await controllerUserDeleteAddress(ctx.session.userInfo,data)
+  ctx.body = await controllerUserDeleteAddress(ctx.session.userInfo, data)
 })
+
+// 获取用户订单路由
+router.post('/userOrder',loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserOrder(ctx.session.userInfo, data)
+})
+
+// 用户下单路由
+router.post('/userOrderCreate',loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserOrderCreate(ctx.session.userInfo, data)
+})
+
 
 
 module.exports = router

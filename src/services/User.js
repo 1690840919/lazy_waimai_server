@@ -4,7 +4,8 @@
  */
 const { getTime } = require('../utils/time')
 const setCrypto = require("../utils/crypto")
-const { User, Bill, Discount, Address } = require('../db/Model')
+const { serviceShopList } = require("./Shop/Shop")
+const { User, Bill, Discount, Address, Order, ShopMenuFood, Shop } = require('../db/Model')
 const escape = require("../utils/escape") // 转义
 
 // 注册用户
@@ -259,7 +260,7 @@ const serviceUserVipPacket = async ({ username }) => {
     const userInfo = await serviceGetUserInfo(username)
     if (!userInfo.isVip) {
       return {
-        code: '1008'
+        code: '1009'
       }
     }
     const vipPacketNum = userInfo.vipPacketNum - 1
@@ -390,6 +391,113 @@ const serviceUserDeleteAddress = async ({ username }, { id }) => {
   }
 }
 
+// 获取商品信息
+const getFoodInfo = async (obj) => {
+  let totalPrice = 0
+  let data = []
+  for (let key in obj) {
+    const foodInfo = await ShopMenuFood.findOne({
+      where: {
+        id: key
+      }
+    })
+    const foodObj = {
+      img: foodInfo.foodImg,
+      num: obj[key],
+      name: foodInfo.foodName,
+      id: foodInfo.id
+    }
+    totalPrice += foodInfo.foodPrice * obj[key]
+    data.push(foodObj)
+  }
+  return {
+    data,
+    totalPrice: totalPrice.toFixed(2),
+  }
+}
+
+// 获取用户订单
+const serviceUserOrder = async ({ id }, reqData) => {
+  try {
+    const findData = {
+      attributes: ['food', 'id', 'shopId', 'arrive', 'commentId'],
+      where: { userId: id },
+      order: [
+        ['id', 'DESC']
+      ],
+    }
+    const { rows } = await Order.findAndCountAll(findData)
+    let orders = []
+    for (let i = 0; i < rows.length; i++) {
+      const obj = rows[i]
+      const food = await getFoodInfo(JSON.parse(obj.food))
+      const { data: shop } = await serviceShopList({ id: obj.shopId })
+      const newObj = {
+        food,
+        order: obj,
+        shop: {
+          name: shop[0].shopname,
+          img: shop[0].logo
+        },
+      }
+      orders.push(newObj)
+    }
+    // rows.forEach(async (obj, index) => {
+    //   const food = await getFoodInfo(JSON.parse(obj.food))
+    //   const newObj = {
+    //     food,
+    //     obj
+    //   }
+    //   orders.push(newObj)
+    // })
+    return {
+      code: '1000',
+      data: orders,
+    }
+  } catch (err) {
+    console.log(err);
+    return {
+      code: '1102',
+    }
+  }
+}
+
+// 用户下单
+const serviceUserOrderCreate = async ({ username, id }, reqData) => {
+  try {
+    reqData.userId = id
+    reqData.time = (new Date()).getTime()
+    const { money } = await serviceGetUserInfo(username) // 查询原有金额
+    const { totalPrice } = await getFoodInfo(JSON.parse(reqData.food))
+    if (totalPrice > money) {
+      return {
+        code: '1008'
+      }
+    }
+    const { data: shop } = await serviceShopList({ id: reqData.shopId })
+    // 更新信息
+    await serviceEditUserInfo({ username }, {
+      redMoney: totalPrice,
+      title: shop[0].shopname,
+      money: money - totalPrice,
+    })
+    const newOrder = await Order.create(reqData)
+    if (newOrder) {
+      return {
+        code: '1000',
+        data: {
+          money: money - totalPrice
+        }
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    return {
+      code: '1107'
+    }
+  }
+}
+
 module.exports = {
   serviceRegisterUserName,
   serviceLoginUserName,
@@ -401,4 +509,6 @@ module.exports = {
   serviceUserNewAddress,
   serviceUserAddress,
   serviceUserDeleteAddress,
+  serviceUserOrder,
+  serviceUserOrderCreate,
 }

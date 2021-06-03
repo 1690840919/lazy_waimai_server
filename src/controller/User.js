@@ -14,6 +14,8 @@ const {
   serviceUserNewAddress,
   serviceUserAddress,
   serviceUserDeleteAddress,
+  serviceUserOrder,
+  serviceUserOrderCreate,
 } = require('../services/User')
 const { SuccessModel, ErrorModel } = require("../Model/ResModel")
 const allCode = require('../config/ResCode')
@@ -127,6 +129,25 @@ const controllerUserDeleteAddress = async (userInfo,reqData) => {
   return new ErrorModel({ code, message: allCode[code] })
 }
 
+// 获取用户订单业务逻辑
+const controllerUserOrder = async (userInfo,reqData) => {
+  const { code, data } = await serviceUserOrder(userInfo,reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '获取成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
+// 用户下单业务逻辑
+const controllerUserOrderCreate = async (userInfo,reqData) => {
+  const { code, data } = await serviceUserOrderCreate(userInfo,reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '下单成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
+
 module.exports = {
   controllerRegisterUsername,
   controllerLoginUsername,
@@ -140,4 +161,6 @@ module.exports = {
   controllerUserNewAddress,
   controllerUserAddress,
   controllerUserDeleteAddress,
+  controllerUserOrder,
+  controllerUserOrderCreate,
 }

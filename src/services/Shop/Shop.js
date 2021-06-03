@@ -107,6 +107,7 @@ const serviceShopSomeFood = async (reqData) => {
 
 }
 
+
 module.exports = {
   serviceShopList,
   serviceShopMenu,
