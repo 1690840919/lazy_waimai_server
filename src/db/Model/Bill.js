@@ -1,7 +1,7 @@
 const seq = require('../seq')
 
 // 引入数据模型
-const { STRING, BOOLEAN, INTEGER } = require('../seqTypes')
+const { STRING, BOOLEAN, INTEGER, FLOAT } = require('../seqTypes')
 // 创建User模型
 const Bill = seq.define('bill', {
   // id 自动生成，设为主键
@@ -21,12 +21,12 @@ const Bill = seq.define('bill', {
     comment: '账单标题'
   },
   num: {
-    type: INTEGER,
+    type: FLOAT,
     allowNull: false,
     comment: '账单金额'
   },
   money: {
-    type: INTEGER,
+    type: FLOAT,
     allowNull: false,
     comment: '余额'
   },

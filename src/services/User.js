@@ -433,11 +433,16 @@ const serviceUserOrder = async ({ id }, reqData) => {
       const food = await getFoodInfo(JSON.parse(obj.food))
       const { data: shop } = await serviceShopList({ id: obj.shopId })
       const newObj = {
-        food,
+        food: {
+          ...food,
+          totalPrice: food.totalPrice * 1 + shop[0].deliver * 1
+        },
         order: obj,
         shop: {
           name: shop[0].shopname,
-          img: shop[0].logo
+          img: shop[0].logo,
+          id: shop[0].id,
+          deliver: shop[0].deliver,
         },
       }
       orders.push(newObj)
@@ -469,24 +474,26 @@ const serviceUserOrderCreate = async ({ username, id }, reqData) => {
     reqData.time = (new Date()).getTime()
     const { money } = await serviceGetUserInfo(username) // 查询原有金额
     const { totalPrice } = await getFoodInfo(JSON.parse(reqData.food))
-    if (totalPrice > money) {
+    const { data: shop } = await serviceShopList({ id: reqData.shopId })
+    const redMoney = totalPrice * 1 + shop[0].deliver * 1
+    const newMoney = money * 1 - redMoney
+    if (redMoney > money) {
       return {
         code: '1008'
       }
     }
-    const { data: shop } = await serviceShopList({ id: reqData.shopId })
     // 更新信息
     await serviceEditUserInfo({ username }, {
-      redMoney: totalPrice,
+      redMoney,
       title: shop[0].shopname,
-      money: money - totalPrice,
+      money: newMoney,
     })
     const newOrder = await Order.create(reqData)
     if (newOrder) {
       return {
         code: '1000',
         data: {
-          money: money - totalPrice
+          money: newMoney,
         }
       }
     }
