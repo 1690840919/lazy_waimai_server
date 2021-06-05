@@ -15,24 +15,24 @@ const Order = seq.define('order', {
     allowNull: false,
     comment: '订单地址id'
   },
-  shopId:{
-    type:STRING,
-    comment:'商家id'
+  shopId: {
+    type: STRING,
+    comment: '商家id'
   },
-  food:{
-    type:STRING,
-    comment:'商品id和数量'
+  food: {
+    type: STRING,
+    comment: '商品id和数量'
   },
-  arrive:{
-    type:BOOLEAN,
-    defaultValue:false,
-    comment:"订单状态"
+  arrive: {
+    type: BOOLEAN,
+    defaultValue: false,
+    comment: "订单状态"
   },
-  deliverTime:{
+  deliverTime: {
     type: STRING,
     comment: '配送时间'
   },
-  payMethod:{
+  payMethod: {
     type: STRING,
     comment: '支付方式'
   },
@@ -40,7 +40,7 @@ const Order = seq.define('order', {
     type: STRING,
     comment: '备注信息'
   },
-  isTicket:{
+  isTicket: {
     type: BOOLEAN,
     comment: '是否发票',
   },
@@ -53,14 +53,22 @@ const Order = seq.define('order', {
     allowNull: false,
     comment: '下单时间',
   },
-  commentId:{
+  commentId: {
     type: STRING,
     comment: '评论id',
   },
-  tools:{
+  tools: {
     type: STRING,
     comment: '餐具份数',
-  }
+  },
+  discount: {
+    type: INTEGER,
+    comment: '红包金额'
+  },
+  discountId: {
+    type: STRING,
+    comment: '红包Id'
+  },
 })
 
 // 导出

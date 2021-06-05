@@ -354,11 +354,17 @@ const serviceUserEditAddress = async ({ username, id }, reqData) => {
 // 获取地址
 const serviceUserAddress = async ({ username, id }, reqData) => {
   try {
-    const findData = {
+    let findData = {
       where: { userId: id },
       order: [
         ['id', 'DESC']
       ],
+    }
+    if (reqData.id) {
+      findData.where = {
+        userId: id,
+        id: reqData.id
+      }
     }
     const { rows: address } = await Address.findAndCountAll(findData)
     return {
@@ -420,7 +426,7 @@ const getFoodInfo = async (obj) => {
 const serviceUserOrder = async ({ id }, reqData) => {
   try {
     const findData = {
-      attributes: ['food', 'id', 'shopId', 'arrive', 'commentId'],
+      attributes: ['food', 'id', 'shopId', 'arrive', 'commentId', 'discount'],
       where: { userId: id },
       order: [
         ['id', 'DESC']
@@ -432,10 +438,14 @@ const serviceUserOrder = async ({ id }, reqData) => {
       const obj = rows[i]
       const food = await getFoodInfo(JSON.parse(obj.food))
       const { data: shop } = await serviceShopList({ id: obj.shopId })
+      console.log(obj);
       const newObj = {
         food: {
           ...food,
-          totalPrice: food.totalPrice * 1 + shop[0].deliver * 1
+          totalPrice: food.totalPrice * 1
+            + shop[0].deliver * 1
+            + food.data.length * 0.5
+            - (obj.discount * 1 || 0)
         },
         order: obj,
         shop: {
@@ -473,21 +483,30 @@ const serviceUserOrderCreate = async ({ username, id }, reqData) => {
     reqData.userId = id
     reqData.time = (new Date()).getTime()
     const { money } = await serviceGetUserInfo(username) // 查询原有金额
-    const { totalPrice } = await getFoodInfo(JSON.parse(reqData.food))
+    const { totalPrice, data } = await getFoodInfo(JSON.parse(reqData.food))
     const { data: shop } = await serviceShopList({ id: reqData.shopId })
-    const redMoney = totalPrice * 1 + shop[0].deliver * 1
+    const redMoney = totalPrice * 1
+      + shop[0].deliver * 1
+      + 0.5 * data.length
+      - reqData.discount * 1
     const newMoney = money * 1 - redMoney
     if (redMoney > money) {
       return {
         code: '1008'
       }
     }
-    // 更新信息
+    // 更新用户信息
     await serviceEditUserInfo({ username }, {
       redMoney,
       title: shop[0].shopname,
       money: newMoney,
     })
+    // 更新红包信息
+    await Discount.destroy({
+      where: {
+        id: reqData.discountId
+      }
+    });
     const newOrder = await Order.create(reqData)
     if (newOrder) {
       return {
