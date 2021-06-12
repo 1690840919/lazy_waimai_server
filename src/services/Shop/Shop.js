@@ -3,7 +3,7 @@
  * @author xiankun
  */
 
-const { Shop, ShopMenu, ShopMenuFood } = require('../../db/Model')
+const { Shop, ShopMenu, ShopMenuFood, User } = require('../../db/Model')
 const { Op } = require("sequelize");
 
 // 获取商家
@@ -107,9 +107,42 @@ const serviceShopSomeFood = async (reqData) => {
 
 }
 
+// 获取收藏商店
+const serviceShopCollect = async ({ id }, reqData) => {
+  try {
+    let res
+    const { collectShopId } = await User.findOne({
+      attributes: ['collectShopId'],
+      where: { id }
+    })
+    if (collectShopId) {
+      const arr = collectShopId.split(',')
+      res = await Shop.findAll({
+        where:{
+          id: {
+            [Op.in]: arr
+          }
+        }
+      })
+    } else {
+      res = []
+    }
+    return {
+      code: '1000',
+      data: res
+    }
+  } catch (err) {
+    return {
+      code: '1102',
+    }
+  }
+
+}
+
 
 module.exports = {
   serviceShopList,
   serviceShopMenu,
   serviceShopFood,
+  serviceShopCollect,
 }

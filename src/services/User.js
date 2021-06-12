@@ -43,7 +43,7 @@ const serviceGetUserInfo = (username, password) => {
   const userInfo = User.findOne({
     attributes: ['id', 'username', 'nickName', 'avatar', 'money',
       'showMoney', 'isVip', 'vipTime', 'vipPacketNum',
-      'gender', 'registerTime', 'phone','collectShopId'],
+      'gender', 'registerTime', 'phone', 'collectShopId'],
     where: whereOpt
   })
   return userInfo
@@ -83,7 +83,7 @@ const serviceEditUserInfo = async ({ username }, newData) => {
   try {
     const { money, id } = await serviceGetUserInfo(username) // 查询原有金额
     if (newData.addCollect) { // 收藏店铺改变操作
-      const shopId = newData.addCollect
+      const shopId = newData.addCollect + ''
       const { collectShopId } = await User.findOne({
         attributes: ['collectShopId'],
         where: { username }
@@ -92,8 +92,8 @@ const serviceEditUserInfo = async ({ username }, newData) => {
         newData.collectShopId = shopId
       } else {
         const arr = collectShopId.split(',')
-        if (arr.includes(shopId + '')) {
-          arr.splice(arr.indexOf(shopId) * 1, 1)
+        if (arr.includes(shopId)) {
+          arr.splice(arr.indexOf(shopId), 1)
         } else {
           arr.push(shopId)
         }
