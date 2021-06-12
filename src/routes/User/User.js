@@ -18,6 +18,8 @@ const {
   controllerUserDeleteAddress,
   controllerUserOrder,
   controllerUserOrderCreate,
+  controllerUserCommentCreate,
+  controllerUserComment,
 } = require('../../controller/User')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck } = require('../../middlewares/loginCheck')
@@ -95,17 +97,27 @@ router.post('/userDeleteAddress', loginCheck, async (ctx, next) => {
 })
 
 // 获取用户订单路由
-router.post('/userOrder',loginCheck, async (ctx, next) => {
+router.post('/userOrder', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
   ctx.body = await controllerUserOrder(ctx.session.userInfo, data)
 })
 
 // 用户下单路由
-router.post('/userOrderCreate',loginCheck, async (ctx, next) => {
+router.post('/userOrderCreate', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
   ctx.body = await controllerUserOrderCreate(ctx.session.userInfo, data)
 })
 
+// 用户评价路由
+router.post('/userCommentCreate', loginCheck, async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserCommentCreate(ctx.session.userInfo, data)
+})
 
+// 获取用户评价路由
+router.post('/userComment', async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerUserComment(data)
+})
 
 module.exports = router

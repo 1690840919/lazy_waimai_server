@@ -5,7 +5,7 @@
 const { getTime } = require('../utils/time')
 const setCrypto = require("../utils/crypto")
 const { serviceShopList } = require("./Shop/Shop")
-const { User, Bill, Discount, Address, Order, ShopMenuFood, Shop } = require('../db/Model')
+const { User, Bill, Discount, Address, Order, ShopMenuFood, Shop, Comment } = require('../db/Model')
 const escape = require("../utils/escape") // 转义
 
 // 注册用户
@@ -524,6 +524,66 @@ const serviceUserOrderCreate = async ({ username, id }, reqData) => {
   }
 }
 
+// 获取用户评价
+const serviceUserComment = async (reqData) => {
+  try {
+    if (!reqData.id) {
+      return {
+        code: '1102',
+      }
+    }
+    const findData = {
+      where: { shopId: reqData.id },
+      order: [
+        ['id', 'DESC']
+      ],
+      include: {
+        attributes: ['avatar', 'nickName'],
+        model: User
+      }
+    }
+    if (reqData.num) {
+      findData.limit = reqData.num
+    }
+    if (reqData.page) {
+      findData.offset = reqData.num * (reqData.page - 1)
+    }
+
+    const { rows: comments } = await Comment.findAndCountAll(findData)
+    return {
+      code: '1000',
+      data: comments
+    }
+  } catch (err) {
+    console.log(err);
+    return {
+      code: '1102',
+    }
+  }
+}
+
+// 用户评价
+const serviceUserCommentCreate = async ({ username, id }, reqData) => {
+  try {
+    reqData.userId = id
+    reqData.time = (new Date()).getTime()
+    const newOrder = await Comment.create(reqData)
+    if (newOrder) {
+      await Order.update({ commentId: reqData.userId },{
+        where: { id:reqData.orderId }
+      })
+      return {
+        code: '1000'
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    return {
+      code: '1108'
+    }
+  }
+}
+
 module.exports = {
   serviceRegisterUserName,
   serviceLoginUserName,
@@ -537,4 +597,6 @@ module.exports = {
   serviceUserDeleteAddress,
   serviceUserOrder,
   serviceUserOrderCreate,
+  serviceUserCommentCreate,
+  serviceUserComment,
 }

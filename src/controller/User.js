@@ -16,6 +16,8 @@ const {
   serviceUserDeleteAddress,
   serviceUserOrder,
   serviceUserOrderCreate,
+  serviceUserCommentCreate,
+  serviceUserComment,
 } = require('../services/User')
 const { SuccessModel, ErrorModel } = require("../Model/ResModel")
 const allCode = require('../config/ResCode')
@@ -67,8 +69,8 @@ const controllerLoginCheck = async (ctx) => {
 }
 
 // 获取账单业务逻辑
-const controllerUserBill = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserBill(userInfo,reqData)
+const controllerUserBill = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserBill(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '获取成功', data })
   }
@@ -76,8 +78,8 @@ const controllerUserBill = async (userInfo,reqData) => {
 }
 
 // 获取红包卡券业务逻辑
-const controllerUserDiscount = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserDiscount(userInfo,reqData)
+const controllerUserDiscount = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserDiscount(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '获取成功', data })
   }
@@ -85,8 +87,8 @@ const controllerUserDiscount = async (userInfo,reqData) => {
 }
 
 // 充值VIP业务逻辑
-const controllerUserVip = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserVip(userInfo,reqData)
+const controllerUserVip = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserVip(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '充值成功', data })
   }
@@ -94,8 +96,8 @@ const controllerUserVip = async (userInfo,reqData) => {
 }
 
 // 领取红包业务逻辑
-const controllerUserVipPacket = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserVipPacket(userInfo,reqData)
+const controllerUserVipPacket = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserVipPacket(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '领取成功', data })
   }
@@ -103,8 +105,8 @@ const controllerUserVipPacket = async (userInfo,reqData) => {
 }
 
 // 新增地址业务逻辑
-const controllerUserNewAddress = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserNewAddress(userInfo,reqData)
+const controllerUserNewAddress = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserNewAddress(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '保存成功', data })
   }
@@ -112,8 +114,8 @@ const controllerUserNewAddress = async (userInfo,reqData) => {
 }
 
 // 获取地址业务逻辑
-const controllerUserAddress = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserAddress(userInfo,reqData)
+const controllerUserAddress = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserAddress(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '获取成功', data })
   }
@@ -121,8 +123,8 @@ const controllerUserAddress = async (userInfo,reqData) => {
 }
 
 // 删除地址业务逻辑
-const controllerUserDeleteAddress = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserDeleteAddress(userInfo,reqData)
+const controllerUserDeleteAddress = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserDeleteAddress(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '删除成功', data })
   }
@@ -130,8 +132,8 @@ const controllerUserDeleteAddress = async (userInfo,reqData) => {
 }
 
 // 获取用户订单业务逻辑
-const controllerUserOrder = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserOrder(userInfo,reqData)
+const controllerUserOrder = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserOrder(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '获取成功', data })
   }
@@ -139,10 +141,28 @@ const controllerUserOrder = async (userInfo,reqData) => {
 }
 
 // 用户下单业务逻辑
-const controllerUserOrderCreate = async (userInfo,reqData) => {
-  const { code, data } = await serviceUserOrderCreate(userInfo,reqData)
+const controllerUserOrderCreate = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserOrderCreate(userInfo, reqData)
   if (code === '1000') {
     return new SuccessModel({ message: '下单成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
+// 用户评价业务逻辑
+const controllerUserCommentCreate = async (userInfo, reqData) => {
+  const { code, data } = await serviceUserCommentCreate(userInfo, reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '评价成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
+
+// 获取用户评价业务逻辑
+const controllerUserComment = async (reqData) => {
+  const { code, data } = await serviceUserComment(reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '获取成功', data })
   }
   return new ErrorModel({ code, message: allCode[code] })
 }
@@ -163,4 +183,6 @@ module.exports = {
   controllerUserDeleteAddress,
   controllerUserOrder,
   controllerUserOrderCreate,
+  controllerUserCommentCreate,
+  controllerUserComment,
 }

@@ -12,5 +12,6 @@
    BOOLEAN: Sequelize.BOOLEAN, // 布尔类型
    FLOAT:Sequelize.FLOAT, // 浮点数
    ARRAY:Sequelize.ARRAY, // 数组
+   ENUM:Sequelize.ENUM,
  }
  

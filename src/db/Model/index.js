@@ -11,6 +11,7 @@ const { Shop } = require('./Shop')
 const { ShopMenu } = require('./ShopMenu')
 const { ShopMenuFood } = require('./ShopMenuFood')
 const { Order } = require('./Order')
+const { Comment } = require("./Comment")
 
 module.exports = {
   User,
@@ -20,5 +21,6 @@ module.exports = {
   Shop,
   ShopMenu,
   ShopMenuFood,
-  Order
+  Order,
+  Comment,
 }
