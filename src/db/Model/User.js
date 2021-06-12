@@ -66,6 +66,10 @@ const User = seq.define('users', {
     defaultValue: 0,
     comment: '会员红包个数'
   },
+  collectShopId: {
+    type: STRING,
+    comment: '收藏店铺的id'
+  },
 })
 
 // 导出

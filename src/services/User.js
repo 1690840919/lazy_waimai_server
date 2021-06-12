@@ -43,7 +43,7 @@ const serviceGetUserInfo = (username, password) => {
   const userInfo = User.findOne({
     attributes: ['id', 'username', 'nickName', 'avatar', 'money',
       'showMoney', 'isVip', 'vipTime', 'vipPacketNum',
-      'gender', 'registerTime', 'phone'],
+      'gender', 'registerTime', 'phone','collectShopId'],
     where: whereOpt
   })
   return userInfo
@@ -82,6 +82,24 @@ const serviceLoginUserName = async (data) => {
 const serviceEditUserInfo = async ({ username }, newData) => {
   try {
     const { money, id } = await serviceGetUserInfo(username) // 查询原有金额
+    if (newData.addCollect) { // 收藏店铺改变操作
+      const shopId = newData.addCollect
+      const { collectShopId } = await User.findOne({
+        attributes: ['collectShopId'],
+        where: { username }
+      })
+      if (!collectShopId) {
+        newData.collectShopId = shopId
+      } else {
+        const arr = collectShopId.split(',')
+        if (arr.includes(shopId + '')) {
+          arr.splice(arr.indexOf(shopId) * 1, 1)
+        } else {
+          arr.push(shopId)
+        }
+        newData.collectShopId = arr.join(',')
+      }
+    }
     const result = await User.update(newData, {
       where: { username }
     });
@@ -102,6 +120,7 @@ const serviceEditUserInfo = async ({ username }, newData) => {
       }
     }
   } catch (err) {
+    console.log(err);
     return {
       code: '1006',
     }
@@ -569,8 +588,8 @@ const serviceUserCommentCreate = async ({ username, id }, reqData) => {
     reqData.time = (new Date()).getTime()
     const newOrder = await Comment.create(reqData)
     if (newOrder) {
-      await Order.update({ commentId: reqData.userId },{
-        where: { id:reqData.orderId }
+      await Order.update({ commentId: reqData.userId }, {
+        where: { id: reqData.orderId }
       })
       return {
         code: '1000'
