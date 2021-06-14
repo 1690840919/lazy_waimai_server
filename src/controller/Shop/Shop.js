@@ -10,6 +10,7 @@ const {
   serviceShopMenu,
   serviceShopFood,
   serviceShopCollect,
+  serviceShopSearch,
 } = require('../../services/Shop/Shop')
 
 // 获取商家业务逻辑
@@ -46,10 +47,19 @@ const controllerShopCollect = async (userInfo, reqData) => {
   }
   return new ErrorModel({ code, message: allCode[code] })
 }
+// 商家搜索逻辑
+const controllerShopSearch = async ( reqData) => {
+  const { code, data } = await serviceShopSearch( reqData)
+  if (code === '1000') {
+    return new SuccessModel({ message: '获取成功', data })
+  }
+  return new ErrorModel({ code, message: allCode[code] })
+}
 
 module.exports = {
   controllerShopList,
   controllerShopMenu,
   controllerShopFood,
   controllerShopCollect,
+  controllerShopSearch,
 }

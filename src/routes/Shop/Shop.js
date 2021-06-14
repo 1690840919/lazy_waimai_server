@@ -10,7 +10,8 @@ const {
   controllerShopList,
   controllerShopMenu,
   controllerShopFood,
-  controllerShopCollect
+  controllerShopCollect,
+  controllerShopSearch,
 } = require('../../controller/Shop/Shop')
 
 // 获取商家路由
@@ -33,7 +34,11 @@ router.post('/shopCollect', loginCheck, async (ctx, next) => {
   const data = ctx.request.body
   ctx.body = await controllerShopCollect(ctx.session.userInfo, data)
 })
-
+// 商家搜索
+router.post('/shopSearch', async (ctx, next) => {
+  const data = ctx.request.body
+  ctx.body = await controllerShopSearch(data)
+})
 
 
 

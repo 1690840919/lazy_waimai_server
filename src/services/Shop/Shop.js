@@ -139,10 +139,33 @@ const serviceShopCollect = async ({ id }, reqData) => {
 
 }
 
+const serviceShopSearch = async (reqData) => {
+  try{
+    const findData = {
+      where:{
+        shopname:{
+          [Op.like]: `%${reqData.searchValue}%`
+        }
+      }
+    }
+    const { rows: shops } = await Shop.findAndCountAll(findData)
+    return {
+      code: '1000',
+      data: shops
+    }
+  }catch(err){
+    console.log(err);
+    return {
+      code: '1102',
+    }
+  }
+}
+
 
 module.exports = {
   serviceShopList,
   serviceShopMenu,
   serviceShopFood,
   serviceShopCollect,
+  serviceShopSearch,
 }
