@@ -118,7 +118,7 @@ const serviceShopCollect = async ({ id }, reqData) => {
     if (collectShopId) {
       const arr = collectShopId.split(',')
       res = await Shop.findAll({
-        where:{
+        where: {
           id: {
             [Op.in]: arr
           }
@@ -140,12 +140,21 @@ const serviceShopCollect = async ({ id }, reqData) => {
 }
 
 const serviceShopSearch = async (reqData) => {
-  try{
+  try {
     const findData = {
-      where:{
-        shopname:{
-          [Op.like]: `%${reqData.searchValue}%`
-        }
+      where: {
+        [Op.or]: [
+          {
+            shopname: {
+              [Op.like]: `%${reqData.searchValue}%`
+            }
+          },
+          {
+            item: {
+              [Op.like]: `%${reqData.searchValue}%`
+            }
+          }
+        ]
       }
     }
     const { rows: shops } = await Shop.findAndCountAll(findData)
@@ -153,7 +162,7 @@ const serviceShopSearch = async (reqData) => {
       code: '1000',
       data: shops
     }
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return {
       code: '1102',
